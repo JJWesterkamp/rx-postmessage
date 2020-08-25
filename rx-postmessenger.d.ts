@@ -29,10 +29,23 @@ declare namespace RxPostmessenger {
         notify<T>(channel: string, payload?: T): void;
 
         /**
+         * Get a function for given channel that, when called (optinoally with a payload), will notify the attached
+         * window. This is essentially the curried version of `Messenger ~ notify`
+         */
+        notifier<T>(channel: string): (payload?: T) => void;
+
+        /**
          * Send a request over given channel with given payload. Returns an observable that will emit the response
          * and then complete.
          */
         request<T = any, U = any>(channel: string, payload?: T): Observable<U>;
+
+        /**
+         * Get a function for given channel that, when called (optionally with a payload), will send
+         * a request to the attached window. The function returns the observable emitting the response
+         * payload. This is essentially the curried version of `Messenger # request`.
+         */
+        requester<T = any, U = any>(channel: string): (payload?: T) => Observable<U>;
 
         /**
          * Returns an Observable that emits all incoming requests for given request-channel.

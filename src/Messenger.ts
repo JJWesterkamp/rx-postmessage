@@ -88,6 +88,15 @@ export class Messenger implements IMessenger {
     }
 
     /**
+     * Get a function for given channel that, when called (optionally with a payload), will send
+     * a request to the attached window. The function returns the observable emitting the response
+     * payload. This is essentially the curried version of `Messenger # request`.
+     */
+    public requester<T = any, U = any>(channel: string): (payload?: T) => Observable<U> {
+        return (payload?: T) => this.request(channel, payload);
+    }
+
+    /**
      * Send a notification over given channel with given payload.
      *
      * @param {string} channel   - The channel name of the notification.
@@ -98,6 +107,14 @@ export class Messenger implements IMessenger {
         this.adapter.postMessage(
             this.messageFactory.makeNotification(channel, payload),
         );
+    }
+
+    /**
+     * Get a function for given channel that, when called with a payload, will notify the attached
+     * window. This is essentially the curried version of `Messenger ~ notify`
+     */
+    public notifier<T>(channel: string): (payload?: T) => void {
+        return (payload?: T) => this.notify(channel, payload);
     }
 
     /**
@@ -172,7 +189,7 @@ export class Messenger implements IMessenger {
     }
 
     /**
-     * Returns an Observable emitting all inbound messages` of given type.
+     * Returns an Observable emitting all inbound messages of given type.
      *
      * Returns an Observable emitting a subset of MessageEvent objects emitted
      * by this.inboundMessages$, passing through all MessageEvent objects whose
